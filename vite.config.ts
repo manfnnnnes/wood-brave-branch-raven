@@ -114,7 +114,7 @@ function authPopupPlugin(): Plugin {
 }
 
 export default defineConfig(() => ({
-  // Базовий шлях для репозиторію GitHub Pages
+  // Фіксуємо точну підпапку репозиторію для GitHub Pages
   base: '/wood-brave-branch-raven/',
   server: {
     host: "0.0.0.0",
@@ -132,14 +132,16 @@ export default defineConfig(() => ({
     authPopupPlugin(),
     appEnvPlugin(),
     tailwindcss(),
-    // Вмикаємо SPA режим для успішної статичної генерації
+    // Переводимо TanStack у режим SPA додатка
     tanstackStart({
       spaMode: true
     }),
     viteReact(),
   ],
-  // Перенаправляємо вихідну папку збірки у стандартну dist для GitHub Pages
   build: {
+    // Явно вказуємо стандартну папку для вивантаження
     outDir: 'dist',
+    // Запобігаємо падінню збірки через SSR-блоки
+    ssr: false
   }
 }));
