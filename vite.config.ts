@@ -5,9 +5,6 @@ import { defineConfig } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { nitro } from "nitro/vite";
-// @ts-expect-error JS plugin alongside the TS vite config
-import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
@@ -116,8 +113,8 @@ function authPopupPlugin(): Plugin {
   };
 }
 
-export default defineConfig(({ command, isPreview }) => ({
-  // Указываем базовый путь к подпапке репозитория на GitHub Pages
+export default defineConfig(() => ({
+  // Базовий шлях для репозиторію GitHub Pages
   base: '/wood-brave-branch-raven/',
   server: {
     host: "0.0.0.0",
@@ -134,21 +131,15 @@ export default defineConfig(({ command, isPreview }) => ({
     pgliteBootstrapPlugin(),
     authPopupPlugin(),
     appEnvPlugin(),
-    grokPwaPlugin(),
     tailwindcss(),
-    // Включаем SPA-мод для генерации статики для GitHub
+    // Вмикаємо SPA режим для успішної статичної генерації
     tanstackStart({
       spaMode: true
     }),
-    ...(command === "build" || isPreview
-      ? [
-          nitro({
-            // Меняем пресет с Vercel на обычный статический таргет
-            preset: "static",
-            serverDir: "./server",
-          }),
-        ]
-      : []),
     viteReact(),
   ],
+  // Перенаправляємо вихідну папку збірки у стандартну dist для GitHub Pages
+  build: {
+    outDir: 'dist',
+  }
 }));
